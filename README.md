@@ -11,7 +11,6 @@ A simple, user-friendly To-Do website to keep your tasks organized and your life
 - [Contributions](#contributions)
 - [References](#references)
 - [Website Demo](#website-demo)
-- [License](#license)
 
 ## Introduction
 Welcome to the Foundation Project - To-Do List. This project is designed to help you manage tasks in an intuitive and interactive way. With basic functionality already in place, you'll have the opportunity to expand the site's features, allowing you to tailor it to your own workflow. The project's main goal is to have the user’s input dynamically affect the DOM, creating a more engaging and responsive task management experience.
