@@ -5,33 +5,35 @@ const priorityInput = document.querySelector('.priority-input');
 const dueDateInput = document.querySelector('.due-date-input');
 const timeInput = document.querySelector('.time-input'); // New time input
 const toDoList = document.querySelector('.todo-list');
+
 const standardTheme = document.querySelector('.standard-theme');
 const lightTheme = document.querySelector('.light-theme');
 const darkerTheme = document.querySelector('.darker-theme');
+
 const sortAscBtn = document.getElementById('sortAsc');
 const sortDescBtn = document.getElementById('sortDesc');
 
-// Make the task list scrollable if there are many tasks
-toDoList.style.maxHeight = '70vh';
-toDoList.style.overflowY = 'auto';
-
 // ------------------ Event Listeners ------------------
-form.addEventListener('submit', addToDo);
-toDoList.addEventListener('click', taskAction);
+if (form) form.addEventListener('submit', addToDo);
+if (toDoList) toDoList.addEventListener('click', taskAction);
 document.addEventListener("DOMContentLoaded", () => {
   renderTasks(getLocalTodos());
 });
-standardTheme.addEventListener('click', () => changeTheme('standard'));
-lightTheme.addEventListener('click', () => changeTheme('light'));
-darkerTheme.addEventListener('click', () => changeTheme('darker'));
-sortAscBtn.addEventListener('click', () => sortTasks('asc'));
-sortDescBtn.addEventListener('click', () => sortTasks('desc'));
+
+// Theme change buttons
+if (standardTheme) standardTheme.addEventListener('click', () => changeTheme('standard'));
+if (lightTheme) lightTheme.addEventListener('click', () => changeTheme('light'));
+if (darkerTheme) darkerTheme.addEventListener('click', () => changeTheme('darker'));
+
+// Sort buttons
+if (sortAscBtn) sortAscBtn.addEventListener('click', () => sortTasks('asc'));
+if (sortDescBtn) sortDescBtn.addEventListener('click', () => sortTasks('desc'));
 
 // Check if a theme has been set previously (default to standard)
 let savedTheme = localStorage.getItem('savedTheme') || 'standard';
 changeTheme(savedTheme);
 
-// Mapping for priority order (lower number means higher priority)
+// Mapping for priority order (lower number = higher priority)
 const priorityMap = { high: 1, medium: 2, low: 3 };
 
 // ------------------ Functions ------------------
@@ -48,15 +50,6 @@ function addToDo(event) {
     return;
   }
   
-  // Validate due date and time aren't in the past
-  const dueDateTime = new Date(`${dueDateInput.value}T${timeInput.value}`);
-  const now = new Date();
-  
-  if (dueDateTime <= now) {
-    alert("Due date and time must be in the future. Please select a future date and time.");
-    return;
-  }
-  
   const taskId = Date.now(); // Unique ID for the task
   const task = {
     id: taskId,
@@ -66,16 +59,25 @@ function addToDo(event) {
     time: timeInput.value
   };
   
-  // Save to local storage
-  savelocal(task);
-  
-  // Render task
-  renderTask(task);
-  
-  // Clear input fields
-  toDoInput.value = '';
-  dueDateInput.value = '';
-  timeInput.value = '';
+  // Save to local storage and render the new task
+  savelocal(toDoInput.value);
+  renderTask(toDoInput.value);
+// check btn;
+const checked = document.createElement('button');
+checked.innerHTML = '<i class="fas fa-check"></i>';
+checked.classList.add('check-btn', `${savedTheme}-button`);
+toDoDiv.appendChild(checked);
+// delete btn;
+const deleted = document.createElement('button');
+deleted.innerHTML = '<i class="fas fa-trash"></i>';
+deleted.classList.add('delete-btn', `${savedTheme}-button`);
+toDoDiv.appendChild(deleted);
+
+// Append to list;
+toDoList.appendChild(toDoDiv);
+
+// CLearing the input;
+toDoInput.value = '';
 }
 
 // Render a single task in the DOM
@@ -128,7 +130,7 @@ function renderTask(task) {
   toDoList.appendChild(toDoDiv);
 }
 
-// Handler for check, edit, and delete buttons using event delegation
+// Handle check, edit, and delete actions via event delegation
 function taskAction(event) {
   const item = event.target;
   // Get the parent task container
@@ -137,66 +139,38 @@ function taskAction(event) {
   const taskId = Number(taskDiv.getAttribute('data-id'));
   
   // Delete functionality
-  if (item.classList.contains('delete-btn') || item.parentElement.classList.contains('delete-btn')) {
+  if (item.classList.contains('delete-btn')) {
     if (confirm("Are you sure you want to delete this task?")) {
       taskDiv.classList.add("fall");
-      // Remove from local storage so that a refresh won't show this task again
+      // Remove from local storage so it doesn't reappear after refresh
       removeLocalTask(taskId);
+      // Wait for transition to complete before removing from DOM
       taskDiv.addEventListener('transitionend', function(){
         taskDiv.remove();
       });
     }
   }
   
-  // Check functionality: toggle completed class and congratulate the user
-  if (item.classList.contains('check-btn') || item.parentElement.classList.contains('check-btn')) {
+  // Check functionality: toggle completed class
+  if (item.classList.contains('check-btn')) {
     taskDiv.classList.toggle("completed");
-    
-    // If task is marked as completed, show congratulatory message
-    if (taskDiv.classList.contains("completed")) {
-      alert("Congrats, you never gave up!");
-    }
   }
   
-  // Edit functionality: immediately show warning and prompt for new values
-  if (item.classList.contains('edit-btn') || item.parentElement.classList.contains('edit-btn')) {
+  // Edit functionality: prompt for new values immediately
+  if (item.classList.contains('edit-btn')) {
     if (confirm("Warning: Editing this task will permanently overwrite its current values. Do you wish to continue?")) {
       editTask(taskDiv, taskId);
     }
   }
 }
 
-// Check if a date and time are in the future (strictly greater than current time)
-function isDateTimeFuture(dateStr, timeStr) {
-  if (!dateStr || !timeStr) return false;
-  
-  const dateTime = new Date(`${dateStr}T${timeStr}`);
-  const now = new Date();
-  
-  return dateTime > now;
-}
-
-// Format current date as YYYY-MM-DD
-function getCurrentDateFormatted() {
-  const now = new Date();
-  return now.toISOString().split('T')[0];
-}
-
-// Format current time as HH:MM with a minute added (to ensure it's future)
-function getCurrentTimePlusMinuteFormatted() {
-  const now = new Date();
-  now.setMinutes(now.getMinutes() + 1); // Add 1 minute to current time
-  return now.toTimeString().substring(0, 5); // Get HH:MM format
-}
-
-// Edit a task: update DOM and local storage with new values
+// Edit a task and update both the DOM and local storage
 function editTask(taskDiv, taskId) {
   // Get current values
   const currentText = taskDiv.querySelector('.todo-item').innerText;
   const currentDueSpan = taskDiv.querySelector('.due-date');
   let currentDueDate = "";
   let currentTime = "";
-  
   if (currentDueSpan) {
     const dueInfo = currentDueSpan.innerText.replace('Due: ', '');
     if (dueInfo.includes(" at ")) {
@@ -207,60 +181,148 @@ function editTask(taskDiv, taskId) {
       currentDueDate = dueInfo;
     }
   }
-  
-  // Prompt user for new task text
+  // Saving to local storage:
+function savelocal(todo){
+    //Check: if item/s are there;
+    let todos;
+    if(localStorage.getItem('todos') === null) {
+        todos = [];
+    }
+    else {
+        todos = JSON.parse(localStorage.getItem('todos'));
+    }
+
+    todos.push(todo);
+    localStorage.setItem('todos', JSON.stringify(todos));
+}
+
+
+
+function getTodos() {
+    //Check: if item/s are there;
+    let todos;
+    if(localStorage.getItem('todos') === null) {
+        todos = [];
+    }
+    else {
+        todos = JSON.parse(localStorage.getItem('todos'));
+    }
+
+    todos.forEach(function(todo) {
+        // toDo DIV;
+        const toDoDiv = document.createElement("div");
+        toDoDiv.classList.add("todo", `${savedTheme}-todo`);
+
+        // Create LI
+        const newToDo = document.createElement('li');
+        
+        newToDo.innerText = todo;
+        newToDo.classList.add('todo-item');
+        toDoDiv.appendChild(newToDo);
+
+        // check btn;
+        const checked = document.createElement('button');
+        checked.innerHTML = '<i class="fas fa-check"></i>';
+        checked.classList.add("check-btn", `${savedTheme}-button`);
+        toDoDiv.appendChild(checked);
+        // delete btn;
+        const deleted = document.createElement('button');
+        deleted.innerHTML = '<i class="fas fa-trash"></i>';
+        deleted.classList.add("delete-btn", `${savedTheme}-button`);
+        toDoDiv.appendChild(deleted);
+
+        // Append to list;
+        toDoList.appendChild(toDoDiv);
+    });
+}
+
+
+function removeLocalTodos(todo){
+    //Check: if item/s are there;
+    let todos;
+    if(localStorage.getItem('todos') === null) {
+        todos = [];
+    }
+    else {
+        todos = JSON.parse(localStorage.getItem('todos'));
+    }
+
+    const todoIndex =  todos.indexOf(todo.children[0].innerText);
+    // console.log(todoIndex);
+    todos.splice(todoIndex, 1);
+    // console.log(todos);
+    localStorage.setItem('todos', JSON.stringify(todos));
+}
+
+// Change theme function:
+function changeTheme(color) {
+    localStorage.setItem('savedTheme', color);
+    savedTheme = localStorage.getItem('savedTheme');
+
+    document.body.className = color;
+    // Change blinking cursor for darker theme:
+    color === 'darker' ? 
+        document.getElementById('title').classList.add('darker-title')
+        : document.getElementById('title').classList.remove('darker-title');
+
+    document.querySelector('input').className = `${color}-input`;
+    // Change todo color without changing their status (completed or not):
+    document.querySelectorAll('.todo').forEach(todo => {
+        Array.from(todo.classList).some(item => item === 'completed') ? 
+            todo.className = `todo ${color}-todo completed`
+            : todo.className = `todo ${color}-todo`;
+    });
+    // Change buttons color according to their type (todo, check or delete):
+    document.querySelectorAll('button').forEach(button => {
+        Array.from(button.classList).some(item => {
+            if (item === 'check-btn') {
+              button.className = `check-btn ${color}-button`;  
+            } else if (item === 'delete-btn') {
+                button.className = `delete-btn ${color}-button`; 
+            } else if (item === 'todo-btn') {
+                button.className = `todo-btn ${color}-button`;
+            }
+        });
+    });
+}
+  // Prompt user for new values (responds quickly)
   const newText = prompt("Edit the task:", currentText);
   if (newText === null || newText.trim() === "") return; // Cancelled or empty
   
-  // Variables for date/time validation
-  let validDateTime = false;
-  let newDueDate = "";
-  let newTime = "";
+  let newDueDate = prompt("Edit the due date (YYYY-MM-DD):", currentDueDate);
+  if (newDueDate === null) newDueDate = currentDueDate;
   
-  // Get current date and time for suggestions
-  const currentDate = getCurrentDateFormatted();
-  const currentTimePlus = getCurrentTimePlusMinuteFormatted();
-  
-  // Keep prompting until user enters a valid future date and time
-  while (!validDateTime) {
-    // Prompt for date
-    newDueDate = prompt("Enter future date (YYYY-MM-DD):", currentDueDate || currentDate);
-    if (newDueDate === null) return; // User cancelled
-    
-    // Prompt for time
-    newTime = prompt("Enter future time (HH:MM):", currentTime || currentTimePlus);
-    if (newTime === null) return; // User cancelled
-    
-    // Validate the date and time are in the future
-    if (isDateTimeFuture(newDueDate, newTime)) {
-      validDateTime = true;
-    } else {
-      alert("Error: Due date and time must be in the future. Please try again.");
-    }
-  }
+  let newTime = prompt("Edit the time (HH:MM):", currentTime);
+  if (newTime === null) newTime = currentTime;
   
   // Update the DOM
   taskDiv.querySelector('.todo-item').innerText = newText;
-  
-  // Create or update the due date span
-  const newDueSpan = document.createElement('span');
-  newDueSpan.classList.add('due-date');
-  let displayText = `Due: ${newDueDate} at ${newTime}`;
-  newDueSpan.innerText = displayText;
-  
-  // Replace or add the due date span
-  if (currentDueSpan) {
-    taskDiv.replaceChild(newDueSpan, currentDueSpan);
+  if (newDueDate || newTime) {
+    const newDueSpan = document.createElement('span');
+    newDueSpan.classList.add('due-date');
+    let displayText = 'Due: ';
+    if (newDueDate) {
+      displayText += newDueDate;
+    }
+    if (newTime) {
+      displayText += ' at ' + newTime;
+    }
+    newDueSpan.innerText = displayText;
+    // Replace the old due-date span if it exists; otherwise, insert before the check button
+    if (currentDueSpan) {
+      taskDiv.replaceChild(newDueSpan, currentDueSpan);
+    } else {
+      taskDiv.insertBefore(newDueSpan, taskDiv.querySelector('.check-btn'));
+    }
   } else {
-    taskDiv.insertBefore(newDueSpan, taskDiv.querySelector('.check-btn'));
+    if (currentDueSpan) currentDueSpan.remove();
   }
   
   // Update the task in local storage
   updateLocalTask(taskId, newText, newDueDate, newTime);
-  
-  // Confirm successful edit
-  alert("Task updated successfully!");
 }
+
+// ------------------ Local Storage Functions ------------------
 
 // Save a task object to local storage
 function savelocal(task) {
@@ -274,7 +336,7 @@ function getLocalTodos() {
   return JSON.parse(localStorage.getItem('todos')) || [];
 }
 
-// Update a task in local storage by its id
+// Update a task in local storage by id
 function updateLocalTask(taskId, newText, newDueDate, newTime) {
   let todos = getLocalTodos();
   todos = todos.map(task => {
@@ -286,7 +348,7 @@ function updateLocalTask(taskId, newText, newDueDate, newTime) {
   localStorage.setItem('todos', JSON.stringify(todos));
 }
 
-// Remove a task from local storage by its id
+// Remove a task from local storage by id
 function removeLocalTask(taskId) {
   let todos = getLocalTodos();
   todos = todos.filter(task => task.id !== taskId);
@@ -301,11 +363,13 @@ function renderTasks(tasks) {
   });
 }
 
-// Sort tasks by priority and then due date/time and re-render them
+// ------------------ Sorting and Theming ------------------
+
+// Sort tasks by priority then due date/time and re-render them
 function sortTasks(order) {
   let todos = getLocalTodos();
   if (order === 'asc') {
-    // Ascending: group tasks from high priority to low
+    // Ascending: high priority tasks come first
     todos.sort((a, b) => {
       let priorityComparison = priorityMap[a.priority] - priorityMap[b.priority];
       if (priorityComparison !== 0) return priorityComparison;
@@ -315,7 +379,7 @@ function sortTasks(order) {
       return dateTimeA - dateTimeB;
     });
   } else {
-    // Descending: group tasks from low priority to high
+    // Descending: low priority tasks come first
     todos.sort((a, b) => {
       let priorityComparison = priorityMap[b.priority] - priorityMap[a.priority];
       if (priorityComparison !== 0) return priorityComparison;
@@ -334,7 +398,7 @@ function changeTheme(color) {
   savedTheme = localStorage.getItem('savedTheme');
   document.body.className = color;
   
-  // Adjust title style for darker theme if applicable
+  // Adjust title style if needed
   const titleEl = document.getElementById('title');
   if (titleEl) {
     if (color === 'darker') {
@@ -344,19 +408,19 @@ function changeTheme(color) {
     }
   }
   
-  // Update input field theme
+  // Update input field theme (if there's an input field to update)
   const inputField = document.querySelector('input');
   if (inputField) {
     inputField.className = `${color}-input`;
   }
   
-  // Update existing task containers
+  // Update existing task containers with new theme
   document.querySelectorAll('.todo').forEach(todo => {
     const isCompleted = todo.classList.contains('completed');
     todo.className = `todo ${color}-todo` + (isCompleted ? ' completed' : '');
   });
   
-  // Update buttons theme
+  // Update all buttons with the new theme
   document.querySelectorAll('button').forEach(button => {
     if (button.classList.contains('check-btn')) {
       button.className = `check-btn ${color}-button`;
@@ -368,4 +432,4 @@ function changeTheme(color) {
       button.className = `edit-btn ${color}-button`;
     }
   });
-};
+}

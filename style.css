@@ -1,37 +1,451 @@
-html {
-  height: 100%;
-  width: 100%;
-  font-family: "Titillium Web", sans-serif;
+/* Reset and Box Sizing */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
+/* Body and Themes */
 body {
-  min-height: 100%;
-  min-width: 100%;
-  background: linear-gradient(pink, violet);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'Work Sans', sans-serif;
+  min-height: 100vh;
+  padding-top: 3%;
 }
 
-button {
-  font-size: 7px;
+/* Theme Backgrounds */
+.standard {
+  background-image: linear-gradient(100deg, #575656, #062e3f);
+  color: #ffdfdb;
+  transition: background-color 0.3s linear;
+  overflow-x: hidden;
 }
 
-#main-content {
-  position: relative;
+.light {
+  background-image: linear-gradient(100deg, #d4f1ff, #ffffff);
+  color: #1a150e;
+  transition: background-color 0.3s linear;
+}
+
+.darker {
+  background-image: linear-gradient(100deg, #001214, #001f29);
+  color: white;
+  transition: background-color 0.3s linear;
+}
+
+/* Header and Form Containers */
+#header,
+#form,
+#datetime {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 10vh;
+}
+
+#header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  font-size: 3rem;
+  min-height: 25vh;
+}
+
+/* Theme Buttons Container */
+.flexrow-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  align-self: flex-end;
+  margin-right: 3%;
+}
+
+/* Theme Selector Buttons */
+.theme-selector {
+  border: 1px solid #d1dae3;
+  border-radius: 50%;
+  height: 35px;
+  width: 35px;
+  margin: 0 8px;
+  transition: -webkit-transform 150ms ease-in-out, transform 150ms ease-in-out, box-shadow 200ms ease-in-out;
+}
+
+.theme-selector:hover {
+  box-shadow: 0 0 8px white;
+  cursor: pointer;
+}
+
+.theme-selector:active {
+  -webkit-transform: scale(0.95);
+  transform: scale(0.95);
+}
+
+.standard-theme {
+  background-image: linear-gradient(100deg, #575656, #062e3f);
+}
+
+.light-theme {
+  background-image: linear-gradient(100deg, #d4f1ff, #ffffff);
+}
+
+.darker-theme {
+  background-image: linear-gradient(100deg, #001214, #001f29);
+}
+
+/* Title Animation – Typewriter Effect for the Full Word "JUST DO IT!" */
+#title {
+  border-right: solid 3px rgba(0, 0, 0, 0.75);
+  white-space: nowrap;
+  overflow: hidden;
+  letter-spacing: 0.20rem;
+  margin: 50px 0 20px;
+  display: inline-block;
+  width: 0;
+  /* Updated steps count to 11 for "JUST DO IT!" (11 characters) */
+  -webkit-animation: typing 2s steps(11, end) 0.5s forwards, blink-caret 750ms step-end infinite;
+  animation: typing 2s steps(11, end) 0.5s forwards, blink-caret 750ms step-end infinite;
+}
+
+/* (Optional) If using darker theme for title */
+#title.darker-title {
+  border-right: solid 3px rgba(1, 57, 76, 0.75);
+}
+
+/* Typing Keyframes */
+@-webkit-keyframes typing {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes typing {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+/* Blinking Caret Keyframes */
+@-webkit-keyframes blink-caret {
+  from, to { border-right-color: transparent; }
+  50% { border-right-color: rgba(0, 0, 0, 0.75); }
+}
+
+@keyframes blink-caret {
+  from, to { border-right-color: transparent; }
+  50% { border-right-color: rgba(0, 0, 0, 0.75); }
+}
+
+/* Form Elements */
+form {
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-direction: column;
-  border: 1px solid #333;
-  background: rgba(255, 255, 255, 0.3);
-  padding: 15px 20px 18px 18px;
-  border-radius: 5px;
-  box-shadow: 2px 5px 5px #333;
+  font-size: 1.7rem;
+  margin: 15px 0;
+  padding: 0.8rem;
+  width: 90%;
+  max-width: 1200px;
 }
 
-#list {
-  margin: 10px;
-  border: 1px solid #333;
-  background: rgba(255, 255, 255, 0.75);
-  padding: 15px 20px 18px 18px;
+form input,
+form select.priority-input {
+  padding: 10px;
+  font-size: 17px;
+  border: none;
+  outline: none;
+  border-top-left-radius: 17px;
+  border-bottom-left-radius: 17px;
+  width: 100%;
+  max-width: 500px;
+  transition: background-color 200ms ease-in-out;
+}
+
+/* Input Themes */
+form input.standard-input {
+  background-color: #181a1a;
+  color: rgb(247, 226, 223);
+}
+
+form input.light-input {
+  background-color: #AEB1B4;
+  color: #1a150e;
+}
+
+form input.light-input::placeholder {
+  color: #1a150e;
+  opacity: 0.7;
+}
+
+form input.darker-input {
+  background-color: #01394c;
+  color: white;
+}
+
+form input.darker-input::placeholder {
+  color: white;
+  opacity: 0.7;
+}
+
+form input:hover {
+  cursor: text;
+}
+
+form input.standard-input:hover {
+  background-color: rgb(0, 0, 0);
+}
+
+form input.light-input:hover {
+  background-color: #919699;
+}
+
+form input.darker-input:hover {
+  background-color: #013141;
+}
+
+/* Form Button */
+form button {
+  padding: 10px;
+  font-size: 17px;
+  border: none;
+  outline: none;
+  border-top-right-radius: 15px;
+  border-bottom-right-radius: 15px;
+  min-width: 100px;
+  transition: background-color 200ms ease-in-out, box-shadow 200ms ease;
+}
+
+/* Button Themes */
+button.standard-button {
+  background-color: rgb(247, 226, 223);
+  color: rgb(0, 0, 0);
+}
+
+button.standard-button:hover {
+  background-color: white;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+}
+
+button.light-button {
+  background-color: white;
+  color: #1a150e;
+}
+
+button.light-button:hover {
+  background-color: #f0f0f0;
+}
+
+button.darker-button {
+  background-color: #002837;
+  color: white;
+}
+
+button.darker-button:hover {
+  background-color: #001f29;
+}
+
+/* Unordered List Container */
+#myUnOrdList {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 90%;
+  max-width: 1200px;
+}
+
+/* Task List */
+.todo-list {
+  width: 100%;
+  max-width: 1200px;
+  min-width: 25%;
+  list-style: none;
+  margin: 20px auto;
+  padding: 0 10px;
+  overflow-x: hidden;
+}
+
+/* Task Item */
+.todo {
+  margin: 1rem 0;
+  font-size: 19px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.25em 0.5em;
+  border-radius: 30px;
+  transition: background-color 200ms ease-in-out;
+}
+
+.standard-todo {
+  background-color: rgb(26, 27, 27);
+}
+
+.light-todo {
+  background-color: #AEB1B4;
+}
+
+.darker-todo {
+  background-color: #01394c;
+}
+
+.todo li {
+  padding: 7px;
+  font-size: 20px;
+  flex: 1;
+  border-radius: 30px;
+  overflow-wrap: anywhere;
+}
+
+/* Control Buttons (Check, Edit, Delete) */
+.check-btn,
+.delete-btn,
+.edit-btn {
+  font-size: 19px;
+  cursor: pointer;
+  width: 2em;
+  height: 2em;
+  border-radius: 50%;
+  margin: 0 5px;
+}
+
+.todo-item {
+  padding: 0 0.5rem;
+}
+
+.fa-trash,
+.fa-check {
+  pointer-events: none;
+}
+
+/* Completed Task Style */
+.completed {
+  transition: 0.2s;
+  text-decoration: line-through;
+  opacity: 0.5;
+}
+
+/* Delete Animation */
+.fall {
+  transition: 0.5s;
+  -webkit-transform: translateY(45rem) rotateZ(45deg);
+  transform: translateY(45rem) rotateZ(45deg);
+  opacity: 0;
+}
+
+/* Priority Colors */
+.high-priority {
+  color: red;
+}
+
+.medium-priority {
+  color: yellow;
+}
+
+.low-priority {
+  color: green;
+}
+
+/* Sort Buttons */
+#sortAsc {
+  background-color: red;
+  color: white;
+  border: none;
+  outline: none;
+  padding: 10px 20px;
   border-radius: 5px;
-  box-shadow: 2px 5px 5px #333;
+  cursor: pointer;
+  transition: background-color 200ms ease-in-out;
+}
+
+#sortAsc:hover {
+  background-color: darkred;
+}
+
+#sortDesc {
+  background-color: green;
+  color: white;
+  border: none;
+  outline: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 200ms ease-in-out;
+}
+
+#sortDesc:hover {
+  background-color: darkgreen;
+}
+
+/* Responsive Design */
+/* Tablets and Smaller Screens */
+@media only screen and (max-width: 800px) {
+  #header {
+    font-size: 2rem;
+  }
+  #title {
+    max-width: 330px;
+    margin-top: 30px;
+    margin-bottom: 10px;
+    /* Updated animation with steps(11, end) */
+    -webkit-animation: typing 3s steps(11, end) 0.5s forwards, blink-caret 750ms step-end infinite;
+    animation: typing 3s steps(11, end) 0.5s forwards, blink-caret 750ms step-end infinite;
+  }
+  form {
+    flex-direction: column;
+    align-items: center;
+  }
+  form input,
+  form select.priority-input {
+    max-width: 90%;
+    border-radius: 17px;
+    margin-bottom: 10px;
+  }
+  form button {
+    width: 90%;
+    border-radius: 15px;
+  }
+}
+
+/* Mobile Phones */
+@media only screen and (max-width: 400px) {
+  #header {
+    font-size: 1.5rem;
+  }
+  #title {
+    max-width: 255px;
+    /* Updated animation with steps(11, end) */
+    -webkit-animation: typing 3.5s steps(11, end) 0.5s forwards, blink-caret 750ms step-end infinite;
+    animation: typing 3.5s steps(11, end) 0.5s forwards, blink-caret 750ms step-end infinite;
+  }
+  form {
+    width: 100%;
+    padding: 0.5rem;
+  }
+  form input,
+  form select.priority-input,
+  form button {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+/* New Typing Animation Keyframes */
+@-webkit-keyframes typing {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes typing {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@-webkit-keyframes blink-caret {
+  from, to { border-right-color: transparent; }
+  50% { border-right-color: rgba(0, 0, 0, 0.75); }
+}
+
+@keyframes blink-caret {
+  from, to { border-right-color: transparent; }
+  50% { border-right-color: rgba(0, 0, 0, 0.75); }
 }

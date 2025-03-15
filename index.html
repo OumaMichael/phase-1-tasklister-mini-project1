@@ -1,28 +1,63 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#062e3f" />
+  <meta name="Description" content="A dynamic and aesthetic To-Do List WebApp." />
+  <!-- Google Font: Work Sans -->
+  <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300&display=swap" rel="stylesheet" />
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0-2/css/all.min.css" 
+        integrity="sha256-46r060N2LrChLLb5zowXQ72/iKKNiw/lAmygmHExk/o=" 
+        crossorigin="anonymous" />
+  <link rel="shortcut icon" type="image/png" href="assets/favicon.png"/>
+  <!-- Link to your CSS file -->
+  <link rel="stylesheet" href="/style.css" />
   <title>Flatiron Task Lister</title>
-  <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-  <div id="main-content">
-    <h1>Task Lister Lite™️</h1>
-
-    <form id="create-task-form" action="" method="POST">
-      <label for="new-task-description">Task description:</label>
-      <input type="text" id="new-task-description" name="new-task-description" placeholder="description">
-      <input type="submit" value="Create New Task">
-    </form>
-
-    <div id="list">
-      <h2>My Todos:</h2>
-      <ul id="tasks">
-      </ul>
+  <div id="header">
+    <div class="flexrow-container">
+      <div class="standard-theme theme-selector"></div>
+      <div class="light-theme theme-selector"></div>
+      <div class="darker-theme theme-selector"></div>
     </div>
-
-    <script src="./src/index.js"></script>
+    <h1 id="title">Go for it!<div id="border"></div></h1>
   </div>
 
+  <!-- Task form -->
+  <form>
+    <input type="text" class="todo-input" placeholder="Enter a task" />
+    <select class="priority-input">
+      <option value="low">Low Priority</option>
+      <option value="medium">Medium Priority</option>
+      <option value="high">High Priority</option>
+    </select>
+    <input type="date" class="due-date-input" />
+    <input type="time" class="time-input" placeholder="Enter time of the task"  />
+    <button type="submit" class="todo-btn">ADD TASK</button>
+  </form>
+
+  <!-- Sorting controls -->
+  <div class="sort-buttons">
+    <button id="sortAsc">Ascending</button>
+    <button id="sortDesc">Descending</button>
+  </div>
+
+  <!-- Date & Time display (for the header clock if needed) -->
+  <div>
+    <p><span id="datetime"></span></p>
+  </div>
+
+  <!-- Task list container -->
+  <div id="myUnOrdList">
+    <ul class="todo-list">
+      <!-- Tasks will be added here dynamically -->
+    </ul>
+  </div>
+
+  <!-- Link to your JS file -->
+  <script src="/src/index.js" type="text/javascript"></script>
 </body>
 </html>
